@@ -1,12 +1,18 @@
 {-# LANGUAGE OverloadedStrings #-}
 import Snmp
+import Json
 import Web.Scotty
 
 import Data.Monoid (mconcat)
 
 main = do
-  x <- queryUptime
-  putStrLn x
+  --x <- queryUptime
+  --let x = enc1 ("aaa",3000)
+  --x<-query
+  --let t=show (getValues x)
+  let o = OidInt "1.2.3" 93331
+  let encoded = enc2 o
+  putStrLn $ enc2 o
 
 
 {-
