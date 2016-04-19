@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
 module Snmp where
 --import Data.ByteString (ByteString)
 --import Control.Exception (bracket, try)
@@ -6,8 +6,6 @@ import Debug.Trace
 import Data.List
 import Network.Snmp.Client
 import Network.Protocol.Snmp
---import Data.Word(Word32)
-
 
 conf1 :: Config
 conf1 = (initial Version1) { hostname = "127.0.0.1", community = Community "public" }
@@ -24,17 +22,11 @@ coupla (Suite c) = c
 getOID :: Coupla -> OID
 getOID (Coupla oid value) = oid
 
+formatOID :: OID ->String
+formatOID x = intercalate "." (map show x)
+
 getValue :: Coupla -> Value
 getValue (Coupla oid value) = value
-
---getTimeTicks :: Value -> Word32
---getTimeTicks ( TimeTicks v) = v
-
-{- getValueStr :: Value -> String
-getValueStr ( TimeTicks v) = show v
-getValueStr ( Gauge32 v) = show v
-getValueStr ( Counter32 v) = show v
-getValueStr ( String v) = show v -}
 
 getIntValue :: Value -> Integer
 getIntValue (TimeTicks v) = toInteger v
@@ -53,13 +45,10 @@ query = do
   return c
 
 getValues :: [Coupla]  -> [Integer]
-getValues x = map ( getIntValue . getValue)  x
+getValues  = map ( getIntValue . getValue)
 
-couplaJSON :: Coupla -> String
-couplaJSON (Coupla o v) =
-  --let oid = getOID x
-  --enc1 ("aaa", 3000)
-  "aaaa"
+getPair :: Coupla -> (String,Integer)
+getPair c = (formatOID $ getOID c , getIntValue $ getValue c)
 
---getJSON :: [Coupla] -> (String, String)
---getJSON x=
+getPairs :: [Coupla] -> [(String,Integer)]
+getPairs = map getPair
