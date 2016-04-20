@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
 module Snmp where
---import Data.ByteString (ByteString)
+import qualified Data.ByteString.Char8 as C
 --import Control.Exception (bracket, try)
 import Debug.Trace
 import Data.List
@@ -34,10 +34,10 @@ getIntValue (Gauge32 v) = toInteger v
 getIntValue (Counter32 v) = toInteger v
 getIntValue (Integer v) = toInteger v
 
-query :: IO [Coupla]
-query = do
+query :: String -> IO [Coupla]
+query oidstr= do
   cl1 <- client conf1
-  res <- get cl1 oids
+  res <- get cl1 [(oidFromBS $ C.pack oidstr)]
   let c = coupla res
   --traceIO $ show c
   --let x=map getValue c
