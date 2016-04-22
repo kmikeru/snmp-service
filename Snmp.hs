@@ -7,8 +7,8 @@ import Data.List
 import Network.Snmp.Client
 import Network.Protocol.Snmp
 
-conf1 :: Config
-conf1 = (initial Version1) { hostname = "127.0.0.1", community = Community "public" }
+conf1 :: String -> Config
+conf1 ip = (initial Version1) { hostname = ip, community = Community "public" }
 
 uptime = "1.3.6.1.2.1.25.1.1.0"
 sysname="1.3.6.1.2.1.1.1.0"
@@ -34,9 +34,10 @@ getIntValue (Gauge32 v) = toInteger v
 getIntValue (Counter32 v) = toInteger v
 getIntValue (Integer v) = toInteger v
 
-query :: String -> IO [Coupla]
-query oidstr= do
-  cl1 <- client conf1
+-- ip oid
+query :: String -> String -> IO [Coupla]
+query ip oidstr= do
+  cl1 <- client (conf1 ip)
   res <- get cl1 [(oidFromBS $ C.pack oidstr)]
   let c = coupla res
   --traceIO $ show c

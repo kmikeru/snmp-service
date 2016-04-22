@@ -8,9 +8,10 @@ import Web.Scotty
 import Data.Monoid (mconcat)
 
 main = scotty 3000 $ do
-  get "/:oid" $ do
+  get "/:ip/:oid" $ do
     oidp <- param "oid" :: ActionM String
-    x<-liftAndCatchIO $ query oidp
+    ip <- param "ip" :: ActionM String
+    x<-liftAndCatchIO $ query ip oidp
     let t=getPairs x
     let v = OidInts $ map (uncurry OidInt) t
     json v
